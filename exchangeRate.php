@@ -34,7 +34,7 @@ class ExchangeRateService
         $results = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() === 200)
         {
-            return $results['info']['rate'];
+            return "The exchange rate is " . $results['info']['rate'];
         }
         else
         {
@@ -50,7 +50,7 @@ class ExchangeRateService
     {
         $amount = 1000;
         $exchangeRate = $this->exchangeRate($amount);
-        return $exchangeRate * $amount;
+        return "The Foreign amount to be received is Rs " . $exchangeRate * $amount;
     }
 }
 
