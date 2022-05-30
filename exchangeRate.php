@@ -8,33 +8,40 @@ class ExchangeRateService
 {   
     private const BASE_URI = 'https://api.apilayer.com/fixer';
 
+    private int $_amount;
+
+    private string $_apiKey;
+
     protected ClientInterface $_client;
 
-    public function __construct(ClientInterface $_client)
+
+    public function __construct(ClientInterface $_client, int $_amount, string $_apiKey)
     {
+        $this->_apiKey = $_apiKey;
         $this->_client = $_client;
+        $this->_amount = $_amount;
     }
 
     /**
      * @return mixed|string
      */
-    public function exchangeRate($amount)
+    public function exchangeRate()
     {
         $response = $this->_client->request('GET', self::BASE_URI . '/' . 'convert', [
             'query' => [
                 'to' => 'INR',
                 'from' => 'EUR',
-                'amount' => $amount,
+                'amount' => $this->_amount,
                 'date' => new DateTime(),
             ],
             'headers' => [
-                'apikey' => 'zJHKIrKqpFSMz5TuR6IS6OeRjss7jWzM',
+                'apikey' => $this->_apiKey,
             ],
         ]);
         $results = json_decode($response->getBody()->getContents(), true);
         if ($response->getStatusCode() === 200)
         {
-            return "The exchange rate is " . $results['info']['rate'];
+            return $results['info']['rate'];
         }
         else
         {
@@ -48,9 +55,7 @@ class ExchangeRateService
      */
     public function foreignAmount()
     {
-        $amount = 1000;
-        $exchangeRate = $this->exchangeRate($amount);
-        return "The Foreign amount to be received is Rs " . $exchangeRate * $amount;
+        $exchangeRate = $this->exchangeRate();
+        return $exchangeRate * $this->_amount;
     }
 }
-
